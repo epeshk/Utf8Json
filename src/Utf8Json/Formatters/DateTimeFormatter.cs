@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using Utf8Json.Internal;
 
@@ -874,7 +876,7 @@ namespace Utf8Json.Formatters
             writer.WriteRawUnsafe((byte)'\"');
         }
 
-        public TimeSpan Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        public unsafe TimeSpan Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
             var str = reader.ReadStringSegmentUnsafe();
             var array = str.Array;
@@ -922,6 +924,12 @@ namespace Utf8Json.Formatters
                 var poolArray = BufferPool.Default.Rent();
                 try
                 {
+                    fixed (byte* b = poolArray)
+                    {
+                        var l = (long*) b;
+                        l[0] = 0;
+                        l[1] = 0;
+                    }
                     for (; array[i] != '.'; i++)
                     {
                         poolArray[day++] = array[i];
