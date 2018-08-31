@@ -102,6 +102,13 @@ namespace Utf8Json.Tests
         }
 
         [Fact]
+        public void Issue105()
+        {
+            JsonSerializer.Deserialize<TimeSpan>("\"88.12:00:00\"").Is(TimeSpan.FromDays(88.5));
+            JsonSerializer.Deserialize<TimeSpan>("\"8.12:00:00\"").Is(TimeSpan.FromDays(8.5));
+        }
+
+        [Fact]
         public void Offset()
         {
             DateTimeOffset now = new DateTime(DateTime.UtcNow.Ticks + TimeZoneInfo.FindSystemTimeZoneById("Tokyo Standard Time").BaseUtcOffset.Ticks, DateTimeKind.Local);
